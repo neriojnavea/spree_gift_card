@@ -1,7 +1,7 @@
 require_dependency 'spree/calculator'
 
 module Spree
-  class Calculator < ActiveRecord::Base
+  class Calculator < Spree::Base
     class GiftCard < Calculator
 
       def self.description
@@ -9,7 +9,7 @@ module Spree
       end
 
       def compute(order, gift_card)
-        # Ensure a negative amount which does not exceed the sum of the order's item_total, ship_total, and 
+        # Ensure a negative amount which does not exceed the sum of the order's item_total, ship_total, and
         # tax_total, minus other credits.
         credits = order.adjustments.select{|a|a.amount < 0 && a.source_type != 'Spree::GiftCard'}.map(&:amount).sum
         [(order.item_total + order.ship_total + order.additional_tax_total + credits), gift_card.current_value].min * -1

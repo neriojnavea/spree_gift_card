@@ -31,9 +31,13 @@ require 'spree/testing_support/authorization_helpers'
 require 'spree/testing_support/capybara_ext'
 require 'spree/testing_support/url_helpers'
 
+# Require mocks
+require 'rspec/active_model/mocks'
+
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include Spree::TestingSupport::UrlHelpers
+  config.include Capybara::DSL
   config.extend Spree::TestingSupport::AuthorizationHelpers::Request, :type => :feature # once spree updates this can be removed
   config.color = true
 
@@ -41,7 +45,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   config.before :each do
-    if example.metadata[:js]
+    if RSpec.current_example.metadata[:js]
       DatabaseCleaner.strategy = :truncation
     else
       DatabaseCleaner.strategy = :transaction

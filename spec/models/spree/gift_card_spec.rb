@@ -24,20 +24,20 @@ describe Spree::GiftCard do
     let(:gift_card) { create(:gift_card, variant: create(:variant, price: 25)) }
 
     it 'should be activatable if created before order, has current value, and order state valid' do
-      gift_card.order_activatable?(mock_model(Spree::Order, state: 'cart', created_at: (gift_card.created_at + 1.second))).should be_true
+      expect(gift_card.order_activatable?(mock_model(Spree::Order, state: 'cart', created_at: (gift_card.created_at + 1.second)))).to eq true
     end
 
     it 'should not be activatable if created after order' do
-      gift_card.order_activatable?(mock_model(Spree::Order, state: 'cart', created_at: (gift_card.created_at - 1.second))).should be_false
+      expect(gift_card.order_activatable?(mock_model(Spree::Order, state: 'cart', created_at: (gift_card.created_at - 1.second)))).to eq false
     end
 
     it 'should not be activatable if no current value' do
       gift_card.stub :current_value => 0
-      gift_card.order_activatable?(mock_model(Spree::Order, state: 'cart', created_at: (gift_card.created_at + 1.second))).should be_false
+      expect(gift_card.order_activatable?(mock_model(Spree::Order, state: 'cart', created_at: (gift_card.created_at + 1.second)))).to eq false
     end
 
     it 'should not be activatable if invalid order state' do
-      gift_card.order_activatable?(mock_model(Spree::Order, state: 'complete', created_at: (gift_card.created_at + 1.second))).should be_false
+      expect(gift_card.order_activatable?(mock_model(Spree::Order, state: 'complete', created_at: (gift_card.created_at + 1.second)))).to eq false
     end
   end
 
@@ -50,7 +50,7 @@ describe Spree::GiftCard do
       order.reload # reload so line item is associated
       order.update!
       gift_card.apply(order)
-      order.adjustments.find_by_source_id_and_source_type(gift_card.id, gift_card.class.to_s).mandatory.should be_true
+      expect(order.adjustments.find_by_source_id_and_source_type(gift_card.id, gift_card.class.to_s).mandatory).to be true
     end
 
     context 'for order total larger than gift card amount' do
